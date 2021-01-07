@@ -1,6 +1,6 @@
 Albion Online Item Builder Generator ⚙
 
-This project will generate a kotlin file for the albion online data project API shim. Example of use of generated code:
+This project will generate a kotlin file for the albion online data project API shim. Example use of generated code:
 
 ```kotlin
 val itemBuilder = AlbionItemBuilder() // output: "T2_BAG,T4_MINERS_CAP"

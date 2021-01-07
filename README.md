@@ -1,4 +1,4 @@
-Albion Online Item Builder Generator ⚙
+# Albion Online Item Builder Generator ⚙
 
 This project will generate a kotlin file for the albion online data project API shim. Example use of generated code:
 

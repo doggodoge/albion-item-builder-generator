@@ -1,5 +1,9 @@
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Simple DTO that encapsulates the metadata for an item based on information
+ * provided in a JSON 
+ */
 data class ItemMetadata(
     @field:SerializedName("LocalizationNameVariable")
     val localizationNameVariable: String,

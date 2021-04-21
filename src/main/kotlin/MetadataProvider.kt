@@ -3,7 +3,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 class MetadataProvider(private val gson: Gson) {
-    fun provideMetadata(): Array<ItemMetadata>? {
+    fun provideJson(): Array<ItemMetadata>? {
         val path = javaClass.classLoader.getResource("items.json")!!.toURI()
         val reader = Files.newBufferedReader(Paths.get(path))
 

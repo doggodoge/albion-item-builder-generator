@@ -3,7 +3,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 class KotlinWriter(private val classString: String, private val classFileName: String) {
-    fun writeKotlinClassToDisk() {
+    fun writeToDisk() {
         val path = Paths.get(".", classFileName)
         val writer = Files.newBufferedWriter(path, Charset.forName("UTF-8"))
 

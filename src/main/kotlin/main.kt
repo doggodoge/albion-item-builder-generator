@@ -1,18 +1,18 @@
 import com.google.gson.GsonBuilder
 
-fun main(args: Array<String>) {
+fun main() {
     val gson = GsonBuilder()
         .serializeNulls()
         .create()
 
     val metadata = MetadataProvider(gson)
-        .provideMetadata()
+        .provideJson()
 
-    val kotlinClassString = ItemBuilderGenerator(metadata!!)
+    val generatedKotlinClass: String = ItemBuilderGenerator(metadata!!)
         .generateItemBuilder()
 
     KotlinWriter(
-        classString = kotlinClassString,
+        classString = generatedKotlinClass,
         classFileName = "AlbionItemBuilder.kt"
-    ).writeKotlinClassToDisk()
+    ).writeToDisk()
 }

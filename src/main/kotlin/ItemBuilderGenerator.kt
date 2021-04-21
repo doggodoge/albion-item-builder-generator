@@ -1,6 +1,17 @@
 import org.ainslec.picocog.PicoWriter
 
+enum class ItemType {
+
+}
+
 class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
+
+    // Determine which type of item we are dealing with, and with that
+    // information pass the `ItemMetadata` class to the corresponding generator
+    // function.
+    //
+    // Item Types will have to be inferred from strings in the JSON file. This
+    // may not be reliable long-term.
 
     fun generateItemBuilder(): String {
         val w = PicoWriter()
@@ -12,8 +23,12 @@ class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
         w.writeln("private val stringBuilder = StringBuilder()")
         w.writeln()
 
+        // FIXME: At the end of each iteration, flush string builder to disk,
+        //  and create a new string builder.
         itemMetadata.forEach {
             if (doesUniqueNameContainTierPrefix(it.uniqueName)) {
+                /* We explicitly choose english as the function names we deal
+                   with should consistently be the same. */
                 val englishLocalizedName = it.localizedNames?.get("EN-US") ?: ""
                 val camelCaseName = convertItemNameToCamelCase(englishLocalizedName)
 
@@ -31,7 +46,7 @@ class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
                     w.indentLeft()
                     w.writeln("}")
                 } else {
-                    applicableTiers.forEach { (_, name) -> w.writeln("stringBuilder.append(\"$name\"") }
+                    applicableTiers.forEach { (_, name) -> w.writeln("stringBuilder.append(\"$name\")") }
                 }
 
                 w.writeln("return this")
@@ -58,6 +73,12 @@ class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
         w.writeln("}")
 
         return w.toString(0)
+    }
+
+    private fun generateTieredItem(item: ItemMetadata): String {
+
+
+        return ""
     }
 
     private fun doesUniqueNameContainTierPrefix(itemName: String): Boolean {
@@ -96,6 +117,8 @@ class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
     }
 
     private fun convertItemNameToCamelCase(itemTitle: String): String {
+        // We don't want to include any special characters such as apostrophes
+        // as these would be illegal characters in function names
         val regex = Regex("[^A-Za-z0-9 ]")
 
         return regex.replace(itemTitle, "")

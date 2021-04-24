@@ -1,4 +1,5 @@
 import org.ainslec.picocog.PicoWriter
+import java.lang.StringBuilder
 
 enum class ItemType {
 
@@ -26,28 +27,26 @@ class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
         // FIXME: At the end of each iteration, flush string builder to disk,
         //  and create a new string builder.
         itemMetadata.forEach {
-            if (doesUniqueNameContainTierPrefix(it.uniqueName)) {
+            if (doesUniqueNameContainTierPrefix(it.uniqueName)
+                && !(it.localizedNames?.get("EN-US") ?: "").isEmpty()) {
                 /* We explicitly choose english as the function names we deal
                    with should consistently be the same. */
                 val englishLocalizedName = it.localizedNames?.get("EN-US") ?: ""
                 val camelCaseName = convertItemNameToCamelCase(englishLocalizedName)
 
+                w.writeln(generateDocStringFromItemDescription(it.localizedDescriptions?.get("EN-US") ?: ""))
                 w.writeln("fun $camelCaseName(tier: Tier): AlbionItemBuilder {")
                 w.indentRight()
                 val applicableTiers = getListOfApplicableTiers(it.uniqueName, itemMetadata)
-                if (applicableTiers.size == 1) {
-                    w.writeln("when (tier) {")
+                w.writeln("when (tier) {")
 
-                    applicableTiers.forEach { (tier, name) ->
-                        w.indentRight()
-                        w.writeln("Tier.$tier -> stringBuilder.append(\"$name,\")")
-                    }
-
-                    w.indentLeft()
-                    w.writeln("}")
-                } else {
-                    applicableTiers.forEach { (_, name) -> w.writeln("stringBuilder.append(\"$name\")") }
+                w.indentRight()
+                applicableTiers.forEach { (tier, name) ->
+                    w.writeln("Tier.$tier -> stringBuilder.append(\"$name,\")")
                 }
+
+                w.indentLeft()
+                w.writeln("}")
 
                 w.writeln("return this")
                 w.indentLeft()
@@ -72,13 +71,19 @@ class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
         w.indentLeft()
         w.writeln("}")
 
-        return w.toString(0)
+        return w.toString()
     }
 
-    private fun generateTieredItem(item: ItemMetadata): String {
-
-
-        return ""
+    private fun generateDocStringFromItemDescription(itemDescription: String): String {
+        val writer = PicoWriter()
+        writer.indentRight()
+        writer.writeln("/**");
+        val lines = itemDescription.trim().split("\n")
+        lines.forEach {
+            writer.writeln(" * $it")
+        }
+        writer.writeln(" */")
+        return writer.toString()
     }
 
     private fun doesUniqueNameContainTierPrefix(itemName: String): Boolean {
@@ -118,9 +123,10 @@ class ItemBuilderGenerator(private val itemMetadata: Array<ItemMetadata>) {
 
     private fun convertItemNameToCamelCase(itemTitle: String): String {
         // We don't want to include any special characters such as apostrophes
-        // as these would be illegal characters in function names
+        // as these would be illegal characters in function names.
         val regex = Regex("[^A-Za-z0-9 ]")
 
+        // TODO: Figure out exactly what this is doing.
         return regex.replace(itemTitle, "")
             .replace(" ", "")
             .decapitalize()

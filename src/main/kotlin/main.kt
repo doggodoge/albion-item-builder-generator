@@ -1,4 +1,5 @@
 import com.google.gson.GsonBuilder
+import java.lang.RuntimeException
 
 fun main() {
     val gson = GsonBuilder()
@@ -6,9 +7,10 @@ fun main() {
         .create()
 
     val metadata = MetadataProvider(gson)
-        .provideJson()
+        .provideItemMetadata()
+        ?: throw RuntimeException("Could not get ItemMetadata from JSON file.")
 
-    val generatedKotlinClass: String = ItemBuilderGenerator(metadata!!)
+    val generatedKotlinClass: String = ItemBuilderGenerator(metadata)
         .generateItemBuilder()
 
     KotlinWriter(

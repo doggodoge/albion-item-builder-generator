@@ -1,4 +1,6 @@
-# Albion Online Item Builder Generator ⚙
+Archived on GitHub and moved to https://git.sr.ht/~gary_moore/albion-item-builder-generator
+
+    # Albion Online Item Builder Generator ⚙
 
 This project will generate a kotlin file for the albion online data project API shim. Example use of generated code:
 
